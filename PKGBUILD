@@ -8,12 +8,15 @@ license=('GPL')
 arch=('any')
 
 package() {
-  # Creating directories
-  find . -type d -print0 | xargs -0 -I % mkdir -p "$pkgdir/%"
-  
   # Installing binaries
-  find usr/bin -type f -print0 | xargs -0 -I % install -m 755 "%" "$pkgdir/%"
+  mkdir -p "$pkgdir/usr/bin/"
+  for f in bin/*; do
+    install -m 755 "$f" "$pkgdir/usr/bin/"
+  done
   
-  # Installing other files
-  find . -not \( -path "./usr/bin" -prune \) -type f -print0 | xargs -0 -I % install -m 644 "%" "$pkgdir/%"
+  # Installing shares
+  mkdir -p "$pkgdir/usr/share/bash-tools/"
+  for f in share/*; do
+    install -m 644 "$f" "$pkgdir/usr/share/bash-tools/"
+  done
 }
