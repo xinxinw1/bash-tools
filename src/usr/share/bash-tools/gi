@@ -5,10 +5,12 @@ gi() { cd "$GIT_X_BASE/$1"; }
 # Bash completion for gi
 
 # http://unix.stackexchange.com/questions/28283/autocomplete-of-filename-in-directory
+# http://stackoverflow.com/questions/1146098/properly-handling-spaces-and-quotes-in-bash-completion
 _giComplete()
 {
   local cur=${COMP_WORDS[COMP_CWORD]}
-  COMPREPLY=( $(compgen -W "$(ls -A "$GIT_X_BASE")" -- $cur) )
+  IFS=$'\n'
+  COMPREPLY=( $(compgen -W "$(ls -A -Q "$GIT_X_BASE")" -- $cur) )
 }
 
-complete -F _giComplete gi
+complete -o filenames -F _giComplete gi
