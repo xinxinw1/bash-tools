@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+files "${@:2}" -print0 | xargs -0 search-file "$1" | less-color

@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+less --quit-if-one-screen --no-init --RAW-CONTROL-CHARS "$@"
