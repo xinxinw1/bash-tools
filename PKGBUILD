@@ -8,15 +8,12 @@ license=('GPL')
 arch=('any')
 
 package() {
-  # Installing binaries
-  mkdir -p "$pkgdir/usr/bin/"
-  for f in bin/*; do
-    install -m 755 $f "$pkgdir/usr/bin/"
-  done
+  # Creating directories
+  find . -type d -print0 | xargs -0 -I % mkdir -p "$pkgdir/%"
   
-  # Installing bash completions
-  mkdir -p "$pkgdir/usr/share/bash-completion/completions/"
-  for f in bashcompletion/*; do
-    install -m 644 $f "$pkgdir/usr/share/bash-completion/completions/"
-  done
+  # Installing binaries
+  find usr/bin -type f -print0 | xargs -0 -I % install -m 755 "%" "$pkgdir/%"
+  
+  # Installing other files
+  find . -not \( -path "./usr/bin" -prune \) -type f -print0 | xargs -0 -I % install -m 644 "%" "$pkgdir/%"
 }
