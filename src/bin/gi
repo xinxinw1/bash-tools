@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ -z "$GIT_X_BASE" ]; then
+  echo "Error: GIT_X_BASE not set"
+  exit 1
+fi
+
+cd "$GIT_X_BASE/$1"

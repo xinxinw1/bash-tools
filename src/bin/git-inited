@@ -1,0 +1,4 @@
+#!/bin/bash
+# http://stackoverflow.com/questions/2180270/check-if-current-directory-is-a-git-repository
+
+git rev-parse --git-dir >/dev/null 2>&1

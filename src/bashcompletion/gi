@@ -1,0 +1,15 @@
+# Bash completion for gi
+
+# http://unix.stackexchange.com/questions/28283/autocomplete-of-filename-in-directory
+_giComplete()
+{
+  if [ -z "$GIT_X_BASE" ]; then
+    echo "Error: GIT_X_BASE not set"
+    return 1
+  fi
+  
+  local cur=${COMP_WORDS[COMP_CWORD]}
+  COMPREPLY=( $(compgen -W "$(ls -A "$GIT_X_BASE")" -- $cur) )
+}
+
+complete -F _giComplete gi
