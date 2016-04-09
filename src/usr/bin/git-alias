@@ -1,9 +1,9 @@
 #!/bin/bash
 
-local opts=
-local arr=()
+opts=""
+arr=()
 while [[ $# > 0 ]]; do
-  local key="$1"
+  key="$1"
   shift
   
   case $key in
