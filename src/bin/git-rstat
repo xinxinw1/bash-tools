@@ -1,0 +1,26 @@
+#!/bin/bash
+
+base="$1"
+if [ -z "$base" ]; then
+  if [ -z "$GIT_X_BASE" ]; then
+    echo "Error: base dir not given and GIT_X_BASE not set"
+    exit 1
+  fi
+  base="$GIT_X_BASE"
+fi
+cd "$base"
+
+for dir in *; do
+  if [[ -d $dir ]]; then
+    cd "$dir"
+    if git inited; then
+      str="$(git for-each-ref --format="%(refname:short) %(push:track)" refs/heads | grep '\[')"
+      if [ -n "$str" ]; then
+        echo "$dir"
+        echo "$str"
+        echo
+      fi
+    fi
+    cd ../
+  fi
+done

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+br="$1"
+if [ -z "$br" ]; then
+  br="$(git curr)"
+fi
+
+git rev-parse --abbrev-ref "$br"@{u}

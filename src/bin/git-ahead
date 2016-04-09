@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+  echo "Error: Need two arguments"
+  exit 1
+fi
+
+git rev-list --left-right --count $1...$2 | cut -f 1
