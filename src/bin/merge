@@ -1,0 +1,30 @@
+#!/usr/bin/bash
+
+read -r -d '' help <<EOT
+Usage: merge <mine> <old> <yours>
+Merge three files and output to <mine>
+EOT
+
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+  echo "$help"
+  exit
+fi
+
+merged=$(diff3 -m "$1" "$2" "$3")
+code="$?"
+
+if [ "$code" == "0" ] || [ "$code" == "1" ]; then
+  cp "$1" "$1".bak
+  echo "$merged" > "$1"
+  diff "$1".bak "$1"
+  if [ "$code" == "0" ]; then
+    echo "Successfully merged"
+  else
+    echo "Merge conflict occured"
+  fi
+else
+  echo "An error occurred code $code"
+fi
+
+exit "$code"
+
