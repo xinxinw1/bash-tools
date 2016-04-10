@@ -1,2 +1,8 @@
 #!/usr/bin/bash
+
+if [ -z "$1" ]; then
+  echo "Error: Missing search string"
+  exit 1
+fi
+
 grep -n --color=always -P "$@"

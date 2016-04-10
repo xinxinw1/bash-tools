@@ -21,8 +21,18 @@ while [[ $# > 0 ]]; do
   esac
 done
 
+if [ ${#args[@]} -eq 0 ]; then
+  args+=(.)
+fi
+
 for i in "${exc[@]}"; do
-  args+=(-not \( -path "$i" -prune \))
+  args+=(-not \( -path)
+  if [ "${args[0]}" = "." ]; then
+    args+=("./$i")
+  else
+    args+=("$i")
+  fi
+  args+=(-prune \))
 done
 
 args+=(-type f)
