@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+
+# http://stackoverflow.com/questions/18755967/how-to-make-a-program-that-finds-ids-of-xinput-devices-and-sets-xinput-some-set
+
+if [ "$1" = "" ]; then 
+    exit 1
+fi
+
+xinput --list | awk -v search="$1" \
+    '$0 ~ search {match($0, /id=[0-9]+/);\
+                  if (RSTART) \
+                    print substr($0, RSTART+3, RLENGTH-3)\
+                 }'
+
