@@ -10,12 +10,14 @@ if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ "$1" = "-h" ] || [ "$1" = "--h
   exit
 fi
 
-merged=$(diff3 -m "$1" "$2" "$3")
+# http://stackoverflow.com/questions/613572/capturing-multiple-line-output-to-a-bash-variable/5322980#5322980
+
+diff3 -m "$1" "$2" "$3" > "$1".merged
 code="$?"
 
 if [ "$code" == "0" ] || [ "$code" == "1" ]; then
   cp "$1" "$1".bak
-  echo "$merged" > "$1"
+  mv "$1".merged "$1"
   diff "$1".bak "$1"
   if [ "$code" == "0" ]; then
     echo "Successfully merged"
