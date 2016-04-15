@@ -1,32 +1,72 @@
 #!/usr/bin/bash
 
 read -r -d '' help <<EOT
-Usage: merge <mine> <old> <yours>
-Merge three files and output to <mine>
+Usage: merge <yours> <mine> <old>
+Merge three files and output to stdout
 EOT
 
-if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+set -o nounset
+
+dry=
+arr=()
+while [[ $# > 0 ]]; do
+  key="$1"
+  shift
+  
+  case $key in
+    -h|--help)
+      echo "$help"
+      exit
+    ;;
+    -d|--dry-run)
+      dry="true"
+    ;;
+    *)
+      arr+=("$key")
+    ;;
+  esac
+done
+
+if [ "${#arr[@]}" -ne "3" ]; then
+  echo "Error: Need 3 arguments"
   echo "$help"
   exit
 fi
 
+yours="${arr[0]}"
+mine="${arr[1]}"
+old="${arr[2]}"
+
 # http://stackoverflow.com/questions/613572/capturing-multiple-line-output-to-a-bash-variable/5322980#5322980
 
-diff3 -m "$1" "$2" "$3" > "$1".merged
-code="$?"
+mergedx="$(diff3 -m "$mine" "$old" "$yours"; echo x$?)"
+code="${mergedx##*x}"
+merged="${mergedx%x*}"
 
-if [ "$code" == "0" ] || [ "$code" == "1" ]; then
-  cp "$1" "$1".bak
-  mv "$1".merged "$1"
-  diff "$1".bak "$1"
-  if [ "$code" == "0" ]; then
-    echo "Successfully merged"
+if [ "$code" == "0" ]; then
+  diff <(cat "$mine") <(echo "$merged")
+  if [ -z "$dry" ]; then
+    echo "$merged" > "$mine" || exit 2
+    echo "Successfully merged and written to $mine"
   else
+    echo "Successfully merged (dry run)"
+  fi
+elif [ "$code" == "1" ]; then
+  diff <(cat "$mine") <(echo "$merged")
+  if [ -z "$dry" ]; then
     echo "Merge conflict occured"
+    if [ -f "${mine}.merge" ]; then
+      echo "Error: File ${mine}.merge already exists"
+      exit 2
+    fi
+    echo "$merged" > "${mine}.merge" || exit 2
+    echo "Fix conflicts and then run"
+    echo "mv \"${mine}.merge\" \"$mine\""
+  else
+    echo "Merge conflict occured (dry run)"
   fi
 else
   echo "An error occurred code $code"
 fi
 
 exit "$code"
-
