@@ -7,9 +7,11 @@ set -o pipefail
 
 for filename in "$@"; do
   pkgname="$(pacman -Qo "$filename" | awk '{print $5}')" || continue
+  # echo "Package name: $pkgname"
   pkgver="$(pacman -Qi "$pkgname" | awk '/^Version/ {print $3}')" || continue
   pkgarch="$(pacman -Qi "$pkgname" | awk '/^Architecture/ {print $3}')" || continue
   pkgcache="/var/cache/pacman/pkg/${pkgname}-${pkgver}-${pkgarch}.pkg.tar.xz"
+  # echo "Package file: $pkgcache"
   filenoslash="${filename/\//}"
-  tar -xf "$pkgcache" "$filenoslash"
+  bsdtar -xf "$pkgcache" "$filenoslash"
 done
