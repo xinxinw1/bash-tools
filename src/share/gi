@@ -9,7 +9,7 @@ gi() { cd "$GIT_X_BASE/$1"; }
 _giComplete()
 {
   local cur=${COMP_WORDS[COMP_CWORD]}
-  IFS=$'\n'
+  local IFS=$'\n'
   COMPREPLY=( $(compgen -W "$(ls -A -Q "$GIT_X_BASE")" -- $cur) )
 }
 
