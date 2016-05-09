@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# http://stackoverflow.com/questions/4631068/how-do-i-list-files-that-do-not-end-with-a-newline
+
+for file in $@; do
+  c="$(tail -c 1 "$file")"
+  if [ "$c" != "" ]; then
+    echo $file
+  fi
+done;
