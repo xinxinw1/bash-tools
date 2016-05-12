@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+if [ -z "$1" ]; then
+  echo "Error: Need brightness argument"
+  exit 1
+fi
+
+# https://wiki.archlinux.org/index.php/Laptop_Mode_Tools
+
+echo "$1" > /sys/class/backlight/intel_backlight/brightness
