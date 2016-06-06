@@ -2,56 +2,30 @@
 
 # Usage: cmpjava <folder> <classname>
 
-err=
-
-# cmp <dir>
-# Compiles all java files in dir
-function cmp {
-  local classdir="$1"
-  
-  if ls "$classdir"/*.java &> /dev/null; then
-    javac -Xlint:unchecked -cp "$classdir":General/:General/* "$classdir"/*.java
-  fi
-  
-  if [ $? -ne 0 ]; then
-    err="true"
-    echo
-  fi
-}
-
-# dirs <cmd> <dir>
-# Run cmd <dir> on each dir recursively
-# <dir> should not have a trailing slash
-function dirs {
-  local thecmd="$1"
-  local thedir="$2"
-  
-  if [ -z "$thedir" ]; then
-    thedir="."
-  fi
-  
-  if [ "${thedir:${#thedir}-3}" == ".nc" ]; then
-    return 0
-  fi
-  
-  echo "Dir: $thedir"
-  "$thecmd" "$thedir"
-  
-  while read i; do
-    dirs "$thecmd" "$i"
-  done < <(find "$thedir" -mindepth 1 -maxdepth 1 -type d)
-}
-
 classdir="$1"
 classname="$2"
+
+err=
 
 if [ -d "$classdir" ]; then
   echo Compiling \"$classdir\"
   echo -------------------------------------------------------------------------------
-  dirs cmp "$classdir"
   
-  if [ -n "$classname" ]; then
-    if [ ! -n "$err" ]; then
+  if [ ! -z "$classname" ]; then
+    classes="$classdir/${classname//[.]//}.java"
+  else
+    classes=("$classdir/"*.java)
+  fi
+  
+  javac -Xlint:unchecked -cp "$classdir":General/:General/* "${classes[@]}"
+    
+  if [ $? -ne 0 ]; then
+    err="true"
+    echo
+  fi
+  
+  if [ ! -z "$classname" ]; then
+    if [ -z "$err" ]; then
       echo
       echo
       
