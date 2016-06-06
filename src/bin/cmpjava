@@ -1,13 +1,16 @@
 #!/bin/bash
 
-# Usage: cmpjava Folder ClassName
+# Usage: cmpjava <folder> <classname>
 
-cs="$(pwd)"
 err=
 
+# cmp <dir>
+# Compiles all java files in dir
 function cmp {
-  if ls $1/*.java &> /dev/null; then
-    javac -Xlint:unchecked -cp ./:$cs/General/ $1/*.java
+  local classdir="$1"
+  
+  if ls "$classdir"/*.java &> /dev/null; then
+    javac -Xlint:unchecked -cp "$classdir":General/:General/* "$classdir"/*.java
   fi
   
   if [ $? -ne 0 ]; then
@@ -16,50 +19,51 @@ function cmp {
   fi
 }
 
-
+# dirs <cmd> <dir>
+# Run cmd <dir> on each dir recursively
+# <dir> should not have a trailing slash
 function dirs {
-  local v
-  if [ ! -n "$2" ]; then
-    v=./
-  else
-    v=$2
+  local thecmd="$1"
+  local thedir="$2"
+  
+  if [ -z "$thedir" ]; then
+    thedir="."
   fi
   
-  if [ "${v:${#v}-4}" == ".nc/" ]; then
+  if [ "${thedir:${#thedir}-3}" == ".nc" ]; then
     return 0
   fi
   
-  echo Dir: $v
-  $1 $v
+  echo "Dir: $thedir"
+  "$thecmd" "$thedir"
   
   while read i; do
-    dirs $1 "$i"
-  done < <(ls -1 -d "$v"*/ 2> /dev/null)
+    dirs "$thecmd" "$i"
+  done < <(find "$thedir" -mindepth 1 -maxdepth 1 -type d)
 }
 
-if [ -d "$1" ]; then
-  cd $1
-  
-  echo Compiling \"$1\"
+classdir="$1"
+classname="$2"
+
+if [ -d "$classdir" ]; then
+  echo Compiling \"$classdir\"
   echo -------------------------------------------------------------------------------
-  dirs cmp
+  dirs cmp "$classdir"
   
-  if [ -n "$2" ]; then
+  if [ -n "$classname" ]; then
     if [ ! -n "$err" ]; then
       echo
       echo
       
-      echo Running \"$2\"
+      echo Running \"$classname\"
       echo -------------------------------------------------------------------------------
-      java -cp ./:$cs/General/ $2
+      java -cp "$classdir":General/:General/* "$classname"
     else
       err=
     fi
   fi
-  
-  cd $cs
 else
-  echo Error: directory \"$1\" doesn\'t exist
+  echo Error: directory \"$classdir\" doesn\'t exist
 fi
 
 #http://stackoverflow.com/questions/13408493/bash-an-and-operator-for-if-statment
