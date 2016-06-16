@@ -7,8 +7,12 @@ if [ -f modification-dates ]; then
   fi
 fi
 
-echo "$ date '+%c'" > modification-dates
-echo "$(date '+%c')" >> modification-dates
-echo "" >> modification-dates
-echo "$ ls -lAR --time-style='+%c'" >> modification-dates
-echo "$(ls -lAR --time-style='+%c')" >> modification-dates
+read -r -d '' output <<EOF
+$ date '+%c'
+$(date '+%c')
+
+$ ls -lAR --time-style='+%c'
+$(ls -lAR --time-style='+%c')
+EOF
+
+echo "$output" > modification-dates
