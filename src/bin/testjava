@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Usage: testjava <folder> <classname>
+
+cmpjava "$1" org.junit.runner.JUnitCore "$2"

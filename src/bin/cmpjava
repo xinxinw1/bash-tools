@@ -1,9 +1,13 @@
 #!/bin/bash
 
-# Usage: cmpjava <folder> <classname>
+# Usage: cmpjava <folder> <classname> <options>
+
+shopt -s nullglob
 
 classdir="$1"
-classname="$2"
+shift
+classname="$1"
+shift
 
 err=
 
@@ -11,13 +15,11 @@ if [ -d "$classdir" ]; then
   echo Compiling \"$classdir\"
   echo -------------------------------------------------------------------------------
   
-  if [ ! -z "$classname" ]; then
-    classes="$classdir/${classname//[.]//}.java"
-  else
-    classes=("$classdir/"*.java)
-  fi
+  classfiles=("$classdir/"*.java)
   
-  javac -Xlint:unchecked -cp "$classdir":General/:General/* "${classes[@]}"
+  if [ "${#classfiles[@]}" -ne "0" ]; then
+    javac -Xlint:unchecked -cp "$classdir:General/:General/*" "${classfiles[@]}"
+  fi
     
   if [ $? -ne 0 ]; then
     err="true"
@@ -31,7 +33,7 @@ if [ -d "$classdir" ]; then
       
       echo Running \"$classname\"
       echo -------------------------------------------------------------------------------
-      java -cp "$classdir":General/:General/* "$classname"
+      java -cp "$classdir:General/:General/*" "$classname" "$@"
     else
       err=
     fi
