@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+# https://wiki.archlinux.org/index.php/Pacman/Pacnew_and_Pacsave#Locating_.pac.2A_files
+
+find / -regextype posix-extended -regex ".+\.pac(new|save)" 2> /dev/null
