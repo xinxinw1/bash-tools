@@ -15,11 +15,7 @@ if [ -d "$classdir" ]; then
   echo Compiling \"$classdir\"
   echo -------------------------------------------------------------------------------
   
-  classfiles=("$classdir/"*.java)
-  
-  if [ "${#classfiles[@]}" -ne "0" ]; then
-    javac -Xlint:unchecked -cp "$classdir:General/:General/*" "${classfiles[@]}"
-  fi
+  find "$classdir" -name '*.java' -print0 | xargs -0 -r javac -Xlint:unchecked -Xlint:deprecation -cp "$classdir:General/:General/*"
     
   if [ $? -ne 0 ]; then
     err="true"
