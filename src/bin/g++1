@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+
+filename="$1"
+g++ "$filename" -o "${filename%.*}" -lm `pkg-config gtkmm-2.4 --cflags --libs`
