@@ -1,0 +1,50 @@
+#!/bin/bash
+
+platform="$1"
+
+if [ -z "$platform" ]; then
+  echo "Error: Missing platform" >&2
+  exit 1
+fi
+
+folder="$(pwd)"
+
+shopt -s nullglob
+
+files=(*.ino src/*.ino)
+if [ "${#files[@]}" -gt "1" ]; then
+  echo "Error: Too many .ino files" >&2
+  exit 1
+fi
+
+copiedApplication=""
+if [ "${#files[@]}" = "1" ]; then
+  theFile="${files[0]}"
+  copiedApplication="$(dirname "$theFile")"/application.cpp
+  echo cp "$theFile" "$copiedApplication"
+  cp "$theFile" "$copiedApplication"
+fi
+
+if [[ ( ! -f "$folder/application.cpp" ) && ( ! -f "$folder/src/application.cpp" ) ]]; then
+  echo "Error: Missing application.cpp" >&2
+  exit 1
+fi
+
+exit_finally() {
+  if [ -n "$copiedApplication" ]; then
+    echo rm "$folder"/"$copiedApplication"
+    rm "$folder"/"$copiedApplication"
+  fi
+  exit "$1"
+}
+
+cd $GIT_X_BASE/particle-firmware/main
+
+echo make clean all -s PLATFORM="$platform" APPDIR="$folder" TARGET_DIR=../build/target/user-part/platform-6-m TARGET_FILE=firmware
+make clean all -s PLATFORM="$platform" APPDIR="$folder" TARGET_DIR=../build/target/user-part/platform-6-m TARGET_FILE=firmware || exit_finally 1
+
+echo cp ../build/target/user-part/platform-6-m/firmware.bin "$folder"/firmware.bin
+cp ../build/target/user-part/platform-6-m/firmware.bin "$folder"/firmware.bin
+
+exit_finally 0
+
