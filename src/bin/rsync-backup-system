@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+  echo "Error: Missing base string"
+  exit 1
+fi
+
+base="$1"
+
+if [ -z "$2" ]; then
+  echo "Error: Missing file string"
+  exit 1
+fi
+
+file="$2"
+
+if [ -z "$3" ]; then
+  echo "Error: Missing system string"
+  exit 1
+fi
+
+system="$3"
+
+if [ -z "$4" ]; then
+  echo "Error: Missing type string"
+  exit 1
+fi
+
+type="$4"
+
+if [ -z "$5" ]; then
+  direc="$base/$system/$type/"
+else
+  subdir="$5"
+  direc="$base/$system/$type/$subdir/"
+fi
+
+rsync-backup "$file" "$direc"
+
