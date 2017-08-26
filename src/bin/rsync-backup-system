@@ -29,11 +29,11 @@ fi
 type="$4"
 
 if [ -z "$5" ]; then
-  direc="$base/$system/$type/"
+  direc="/$system/$type/"
 else
   subdir="$5"
-  direc="$base/$system/$type/$subdir/"
+  direc="/$system/$type/$subdir/"
 fi
 
-rsync-backup "$file" "$direc"
-
+echo rsync-backup --rsync-path="mkdir -p \"$direc\"" "$direc" "$file" "$base$direc"
+rsync-backup --rsync-path="mkdir -p \"$direc\"" "$direc" "$file" "$base$direc"
