@@ -16,4 +16,5 @@ for filename in "$@"; do
   # echo "Package file: $pkgcache"
   filenoslash="${filename/\//}"
   bsdtar -xf "$pkgcache" "$filenoslash"
+  echo "Extracted $filenoslash from $pkgcache"
 done
