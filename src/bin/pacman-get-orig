@@ -12,9 +12,17 @@ for filename in "$@"; do
   # echo "Package name: $pkgname"
   pkgver="$(pacman -Qi "$pkgname" | awk '/^Version/ {print $3}')" || continue
   pkgarch="$(pacman -Qi "$pkgname" | awk '/^Architecture/ {print $3}')" || continue
-  pkgcache="/var/cache/pacman/pkg/${pkgname}-${pkgver}-${pkgarch}.pkg.tar.xz"
+  pkgcacheprefix="/var/cache/pacman/pkg/${pkgname}-${pkgver}-${pkgarch}.pkg.tar"
   # echo "Package file: $pkgcache"
   filenoslash="${filename/\//}"
-  bsdtar -xf "$pkgcache" "$filenoslash"
+  if [ -f "$pkgcacheprefix.zst" ]; then
+    pkgcache="$pkgcacheprefix.zst"
+    tararg="-I zstd"
+  else
+    pkgcache="$pkgcacheprefix.xz"
+    tararg=""
+  fi
+  echo tar $tararg -xf \"$pkgcache\" \"$filenoslash\"
+  tar $tararg -xf "$pkgcache" "$filenoslash"
   echo "Extracted $filenoslash from $pkgcache"
 done
